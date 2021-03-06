@@ -1,2 +1,3 @@
 *.autosave
+.stack-work/
 .DS_Store
