@@ -1,15 +1,8 @@
--- | Haskell tr implementation. Just supports the swap and delete modes:
--- * tr string1 string2
--- * tr -d string1
---
--- PLEASE DON'T CHANGE THE INTERFACE OF THIS FILE AS WE WILL EXPECT IT TO BE
--- THE SAME WHEN TESTING!
 module Tr
     ( CharSet
     , tr
     ) where
 
--- | Just to give `tr` a more descriptive type
 type CharSet = String
 
 -- | 'tr' - the characters in the first argument are translated into characters
@@ -30,6 +23,17 @@ type CharSet = String
 --
 -- It's up to you how to handle the first argument being the empty string, or
 -- the second argument being `Just ""`, we will not be testing this edge case.
-tr :: CharSet -> Maybe CharSet -> String -> String
-tr _inset _outset xs = xs
 
+translationMap :: CharSet -> CharSet -> [(Char, Char)]
+translationMap [] _ = []
+translationMap (x : firstOthers) (y : []) = (x, y) : (translationMap firstOthers (y : []))
+translationMap (x : firstOthers) (y : secondOthers) = (x, y) : (translationMap firstOthers secondOthers)
+
+replaceMode :: [(Char, Char)] -> String -> String
+replaceMode translationMap = map (\x -> case lookup x translationMap of
+                                    Just y -> y
+                                    Nothing -> x)
+
+tr :: CharSet -> Maybe CharSet -> String -> String
+tr first (Just second) = replaceMode (translationMap first second)
+tr first Nothing = filter (\x -> not (elem x first))
