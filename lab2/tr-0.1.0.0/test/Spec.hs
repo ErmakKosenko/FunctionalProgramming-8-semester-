@@ -43,6 +43,10 @@ main = hspec $ describe "Testing tr" $ do
         tr' "abc" "defg" "abcdef" `shouldBe` "defdef"
 
     describe "Test replaceMode #7" $
+      it "abc -> d" $
+        tr' "abca" "defg" "abcdef" `shouldBe` "defdef"
+
+    describe "Test replaceMode #8" $
       it "eo -> oe" $
         tr' "eo" "oe" "hello" `shouldBe` "holle"
 
@@ -75,7 +79,7 @@ main = hspec $ describe "Testing tr" $ do
       it "-d abcd" $
         tr'' "abcd" "abce" `shouldBe` "e"
 
-    describe "Test replaceMode #6" $
+    describe "Test deleteMode #8" $
       it "-d e" $
         tr'' "e" "hello" `shouldBe` "hllo"
 

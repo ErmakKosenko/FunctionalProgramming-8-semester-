@@ -3,6 +3,8 @@ module Tr
     , tr
     ) where
 
+import Data.Maybe
+
 type CharSet = String
 
 -- | 'tr' - the characters in the first argument are translated into characters
@@ -24,16 +26,11 @@ type CharSet = String
 -- It's up to you how to handle the first argument being the empty string, or
 -- the second argument being `Just ""`, we will not be testing this edge case.
 
-translationMap :: CharSet -> CharSet -> [(Char, Char)]
-translationMap [] _ = []
-translationMap (x : firstOthers) (y : []) = (x, y) : (translationMap firstOthers (y : []))
-translationMap (x : firstOthers) (y : secondOthers) = (x, y) : (translationMap firstOthers secondOthers)
-
-replaceMode :: [(Char, Char)] -> String -> String
-replaceMode translationMap = map (\x -> case lookup x translationMap of
-                                    Just y -> y
-                                    Nothing -> x)
+replacementMap :: CharSet -> CharSet -> [(Char, Char)]
+replacementMap [] _ = []
+replacementMap (x : firstOthers) [y] = (x, y) : replacementMap firstOthers [y]
+replacementMap (x : firstOthers) (y : secondOthers) = (x, y) : replacementMap firstOthers secondOthers
 
 tr :: CharSet -> Maybe CharSet -> String -> String
-tr first (Just second) = replaceMode (translationMap first second)
-tr first Nothing = filter (\x -> not (elem x first))
+tr first (Just second) = map (\x -> Data.Maybe.fromMaybe x (lookup x (replacementMap first second)))
+tr first Nothing = filter (`notElem` first)
